@@ -2,8 +2,30 @@ import cv2
 import numpy as np
 import face_recognition
 
-imgAaron = face_recognition.load_image_file('ImagesBasic/Aaron_Eckhart/Aaron_Eckhart_0001_0000.jpg')
-imgAaron = cv2.cvtColor(imgAaron, cv2.COLOR_BGR2RGB)
+imgChris = face_recognition.load_image_file('ImagesBasic/Chris_Evans/Chris_Evans.jpg')
+imgChris = cv2.cvtColor(imgChris, cv2.COLOR_BGR2RGB)
 
-cv2.imshow('Aaron Eckhart', imgAaron)
+imgTest = face_recognition.load_image_file('ImagesBasic/Chris_Evans/Chris_Evans_test.jpg')
+imgTest = cv2.cvtColor(imgTest, cv2.COLOR_BGR2RGB)
+
+faceLoc = face_recognition.face_locations(imgChris)[0]
+encodeChris = face_recognition.face_encodings(imgChris)[0]
+cv2.rectangle(imgChris, (faceLoc[3], faceLoc[0]), (faceLoc[1], faceLoc[2]), (0, 255, 0), 2)
+
+faceLocTest = face_recognition.face_locations(imgTest)[0]
+encodeTest = face_recognition.face_encodings(imgTest)[0]
+cv2.rectangle(imgTest, (faceLocTest[3], faceLocTest[0]), (faceLocTest[1], faceLocTest[2]), (0, 255, 0), 2)
+
+# Comparando os rostos entre as duas imagens: Se True então é a mesma pessoa
+results = face_recognition.compare_faces([encodeChris], encodeTest)
+print(results)
+
+# Descobrindo a distância entre as duas imagens, quanto menor d, mais provável serem a mesma pessoa
+faceDis = face_recognition.face_distance([encodeChris], encodeTest)
+print(faceDis)
+
+cv2.putText(imgTest, f'{results} {round(faceDis[0],2)}', (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+
+cv2.imshow('Chris Evans', imgChris)
+cv2.imshow('Chris Test', imgTest)
 cv2.waitKey(0)
