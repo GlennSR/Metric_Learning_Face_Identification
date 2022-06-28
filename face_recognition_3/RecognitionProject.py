@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import face_recognition
 import os
+import pickle
 
 path = "ImagesProject"
 images = []
@@ -40,17 +41,35 @@ print(knownClasses)
 
 
 # Testing with a unknown image
-imgTest = face_recognition.load_image_file('TestImages/paris_hilton.jpeg')
+
+# Load the encodings done before
+encodings_file = "encodings.pickle"
+data = pickle.loads(open(encodings_file, "rb").read())
+
+imgTest = face_recognition.load_image_file('TestImages/Arnold_Schwarzenegger.jpg')
 imgTest = cv2.resize(imgTest, (0, 0), None, 0.25, 0.25)
 imgTest = cv2.cvtColor(imgTest, cv2.COLOR_BGR2RGB)
-encodeTest = face_recognition.face_encodings(imgTest)[0]
 
-# Comparing the image with the database
-results = face_recognition.compare_faces(encodeListKnown, encodeTest)
+#Locating the face in the image
+faceLocTest = face_recognition.face_locations(imgTest)
+encodeTest = face_recognition.face_encodings(imgTest, faceLocTest)
 
-for i in range(len(results)):
-    if results[i] == True:
-        print(i)
-        print(knownClasses[i])
-# print(results.count(True))
+cv2.rectangle(imgTest, (faceLocTest[0][3], faceLocTest[0][0]), (faceLocTest[0][1], faceLocTest[0][2]), (0, 255, 0), 2)
+
+for encodeFace, faceLoc in zip(encodeTest, faceLocTest):
+  # Comparing the image with the database
+  matches = face_recognition.compare_faces(data["encodings"], encodeFace)
+  # Descobrindo a distância entre as duas imagens, quanto menor d, mais provável serem a mesma pessoa
+  faceDis = face_recognition.face_distance(data["encodings"], encodeFace)
+  print(faceDis)
+  print(knownClasses)
+
+  matchIndex = np.argmin(faceDis)
+  print(matchIndex)
+
+  if matches[matchIndex]:
+    name = classNames[matchIndex]
+    print(name)
+    cv2.putText(imgTest, f'{name}\n{round(faceDis[matchIndex],2)}', (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+    cv2_imshow(imgTest)
 
