@@ -36,8 +36,7 @@ def find_encodings(images):
             pass
     return encodeList, knownClasses
 
-encodeListKnown, knownClasses = find_encodings(images)
-print(knownClasses)
+# encodeListKnown, knownClasses = find_encodings(images)
 
 
 # Testing with a unknown image
@@ -62,7 +61,6 @@ for encodeFace, faceLoc in zip(encodeTest, faceLocTest):
   # Descobrindo a distância entre as duas imagens, quanto menor d, mais provável serem a mesma pessoa
   faceDis = face_recognition.face_distance(data["encodings"], encodeFace)
   print(faceDis)
-  print(knownClasses)
 
   matchIndex = np.argmin(faceDis)
   print(matchIndex)
