@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Example to compare the faces in two images.
 # Brandon Amos
